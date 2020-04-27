@@ -182,30 +182,30 @@ server<-function(input,output,session){
 #### update text box input 
 #### FIX: allow user to enter own value and overide OCR value.   
   
-  observe({  
-    
-    file<-rv$image 
-    
-    if (!is.null(file)){
-    image_read(file) %>%
-      image_info()%>%
-      select(height)->height
-    
-    image_read(file) %>%
-      image_crop(paste0("+0+",round(0.94*height))) %>% ## height from image info
-      image_convert(type="grayscale") %>%
-      image_modulate(brightness = 120) %>%
-      image_enhance %>%
-      image_median() %>%
-      image_contrast() %>%
-      image_ocr() %>% 
-      str_extract("Camera\\d{1,}")->x
-    
-      updateTextInput(session = session,
-                inputId = "station_id",
-                value = x)  
-    }
-  })
+  # observe({  
+  #   
+  #   file<-rv$image 
+  #   
+  #   if (!is.null(file)){
+  #   image_read(file) %>%
+  #     image_info()%>%
+  #     select(height)->height
+  #   
+  #   image_read(file) %>%
+  #     image_crop(paste0("+0+",round(0.94*height))) %>% ## height from image info
+  #     image_convert(type="grayscale") %>%
+  #     image_modulate(brightness = 120) %>%
+  #     image_enhance %>%
+  #     image_median() %>%
+  #     image_contrast() %>%
+  #     image_ocr() %>% 
+  #     str_extract("Camera\\d{1,}")->x
+  #   
+  #     updateTextInput(session = session,
+  #               inputId = "station_id",
+  #               value = x)  
+  #   }
+  # })
   
   ## print something in app ##
   output$dir <- renderPrint({
@@ -838,3 +838,23 @@ output$nested_df<-renderPrint(str(rv$df[input$row_id,]$ident[[1]]))
 }
 
 shinyApp(ui, server)
+
+image_read("image/11070008.JPG") %>%
+  image_resize("x600")%>%
+  image_crop(geometry = geometry_area(height=558,
+                                 width=57,
+                                 x_off=25,
+                                 y_off=526))
+
+
+$xmin
+[1] 25
+
+$xmax
+[1] 57
+
+$ymin
+[1] 526
+
+$ymax
+[1] 558
