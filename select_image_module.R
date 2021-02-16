@@ -7,18 +7,36 @@ select_image_UI <- function(id) {
               selectize = F)
 }
 
-select_image_server <- function(input, output, session, dir) {
+select_image_server <- function(id, dir, d) {
+  
+  moduleServer(id, function(input, output, session) {
   
   observe({
     
-    x<-fs::dir_ls(dir())
+    x <- fs::dir_ls(
+      dir()
+      ) %>% 
+      fs::path_file()
+    
+    if(!is.null(d)) {
+      selected = d$inputs$`image_list-image_list`
+    } else {
+      selected = x[1]
+    }
     
     updateSelectInput(session,
                       "image_list",
-                      choices=x)
+                      choices=x,
+                      selected = selected)
+    
   })
   
-  curr_img<-reactive(input$image_list)
   
-  return(curr_img)
+    reactive(
+      str_c(dir(), input$image_list, sep = "/")
+      )
+  
+    
+  })
+  
 }
