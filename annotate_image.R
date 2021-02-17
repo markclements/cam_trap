@@ -1,3 +1,4 @@
+## some comments
 annotate_image_UI <- function(id) {
   ns <- NS(id)
   actionButton(
