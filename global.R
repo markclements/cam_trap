@@ -18,4 +18,5 @@ source("zoom_image_module.R")
 source("select_image_module.R")
 source("annotate_image.R")
 source("display_table_module.R")
+source("apply_last_module.R")
 

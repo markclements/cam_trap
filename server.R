@@ -40,6 +40,13 @@ server <- function(session, input, output) {
     selected,
     rv
   )
+  
+  apply_last_server(
+    id = "apply_last",
+    curr_img = curr_img,
+    dir = dir,
+    rv = rv
+  )
 
   display_table_server(
     id = "disp_table",

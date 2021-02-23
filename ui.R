@@ -36,6 +36,7 @@ ui <- navbarPage(
         select_image_UI("image_list"),
         actionButton("zoom", "zoom") %>% tagAppendAttributes(onclick = "wheelzoom(document.querySelectorAll('img'));"),
         annotate_image_UI("img_ann"),
+        apply_last_UI("apply_last"),
         display_table_UI("disp_table")
       )
       )

@@ -49,7 +49,7 @@ annotate_image_server <- function(id, curr_img, selected, rv) {
       rv$names <- unique(c(input$species_update, rv$names)) %>% sort()
 
   # print(rv$names)
-})
+  })
 
     observeEvent(input$up_img, {
       removeModal()
