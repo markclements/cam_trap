@@ -1,26 +1,28 @@
 server <- function(session, input, output) {
   rv <- reactiveValues()
 
-  if (file.exists("inputs.RDS")) {
-    d <- readRDS("inputs.RDS") ## error: can not open connection
-    rv$df <- d$df
-    rv$names <- d$names ## possibly related to saving a reactive() object
-  } else {
-    d <- NULL
-    rv$df <- NULL
-    rv$names <- NULL
-  }
-
 
   callModule(
     module = input_folder_server,
     id = "directory"
   ) -> dir
 
+  on_start_on_stop_server(
+    id = "on_start",
+    rv = rv,
+    dir = dir,
+    input = input
+  )
+  
+  select_names_server(
+    id = "select_names",
+    rv = rv
+  )
+  
   select_image_server(
     id = "image_list",
-    dir,
-    d
+    dir = dir,
+    rv = rv
   ) -> curr_img ## returned as reactive
 
   callModule(
@@ -54,18 +56,5 @@ server <- function(session, input, output) {
     curr_img
   ) -> selected ## returned as reactive
 
-  onStop(function() {
-    cat("stopping")
-
-    isolate({
-      saveRDS(
-        list(
-          df = tibble(rv$df),
-          names = rv$names,
-          inputs = reactiveValuesToList(input)
-        ),
-        file = "inputs.RDS"
-      )
-    })
-  })
+  
 }

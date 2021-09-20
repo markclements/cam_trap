@@ -4,8 +4,10 @@ ui <- navbarPage(
   tabPanel(
     title = "Import",
     column(
-      width = 3,
-      input_folder_UI("directory")
+      width = 12,
+      input_folder_UI("directory"),
+      on_start_on_stop_UI("on_start"),
+      select_names_UI("select_names")
     )
   ),
   #### end import

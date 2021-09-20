@@ -1,0 +1,65 @@
+body {
+  color: black; /* text color */
+  background-color: white;
+}
+
+#img-img {
+  width: 100% ;
+  height: auto !important;
+  background-color: grey;
+}
+
+img {
+  width: 100%;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px ;
+}
+
+#img_seq-image_num {
+  padding-top: 15px;
+  padding-left: 0px;
+}
+
+#record_control > button {
+  display: inline-block;
+  width: 45%;
+  margin-bottom: 10px;
+}
+
+#sequence_nav > button {
+  display:inline-block;
+  width:100px;
+  margin-bottom: 10px;
+}
+
+#out {
+  display:inline-block;
+  width: auto;
+  text-align: center;
+  padding:10px;
+}
+
+#list_button > button {
+  display: inline-block;
+  width: 45%;
+  margin-bottom: 10px;
+}
+
+#list_species {
+  margin-left: 25%;
+}
+
+#species_distance {
+  margin-top: 10px;
+}
+
+#record_buttons {
+  margin-left: 25%;
+}
+
+summary {
+  display: list-item;
+  margin-bottom: 15px;
+}

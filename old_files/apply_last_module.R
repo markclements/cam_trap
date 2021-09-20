@@ -26,7 +26,7 @@ apply_last_server <- function(id, dir, curr_img, rv) {
       
       last <- rv$df %>%
         filter(image == last_img) %>%
-        slice_tail() %>% 
+       # slice_tail() %>% 
         mutate(image = cur_img)
       
       rv$df <- bind_rows(rv$df, last)

@@ -3,12 +3,12 @@ select_image_UI <- function(id) {
   selectInput(ns("image_list"),
     "select",
     choices = NA,
-    size = 5,
+    size = 10,
     selectize = F
   )
 }
 
-select_image_server <- function(id, dir, d) {
+select_image_server <- function(id, dir, rv) {
   moduleServer(id, function(input, output, session) {
     observe({
       x <- fs::dir_ls(
@@ -16,8 +16,8 @@ select_image_server <- function(id, dir, d) {
       ) %>%
         fs::path_file()
 
-      if (!is.null(d)) {
-        selected <- d$inputs$`image_list-image_list`
+      if (length(rv$d)!=0) {
+        selected <- rv$d
       } else {
         selected <- x[1]
       }
