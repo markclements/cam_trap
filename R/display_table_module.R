@@ -8,8 +8,8 @@ display_table_server <- function(id, rv) {
   moduleServer(id, function(input, output, session) {
 
     output$table <- renderExcel({
-    #output$table <- renderReactable({ 
-      if (is.null(rv$annotations)) return() 
+    #output$table <- renderReactable({
+      if (is.null(rv$annotations)) return()
 
       else {
 
@@ -19,6 +19,7 @@ display_table_server <- function(id, rv) {
           mutate(images = map_int(images, ~length(.))) %>%
           ungroup() -> table
 
+  print(table)
       # reactable(table,
       #           resizable = TRUE, 
       #           showPageSizeOptions = TRUE,
@@ -27,20 +28,18 @@ display_table_server <- function(id, rv) {
       #           striped = TRUE, 
       #           highlight = TRUE,
       #           bordered = TRUE)
-      excelTable(data = table)
+      excelTable(data = table, fill = TRUE)
       }
       })
-    
-    observe({
-      if (is.null(rv$annotations)) return()
-    rv$record <- getReactableState("table", "selected")
-    })
-    
-    observeEvent(rv$event,{
-      updateReactable(
-        outputId = "table",
-        selected = NA
-      )
-    })
-  })    
+    # observe({
+    #   if (is.null(rv$annotations)) return()
+    # rv$record <- getReactableState("table", "selected")
+    # })
+    # observeEvent(rv$event,{
+    #   updateReactable(
+    #     outputId = "table",
+    #     selected = NA
+    #   )
+    # })
+  })
 }

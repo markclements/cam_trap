@@ -1,135 +1,134 @@
 ## some comments
 image_records_UI <- function(id) {
   ns <- NS(id)
-  div(
-    # fluidRow(
-    #   column(
-    #     width = 3,
-    #     textOutput(ns("species_record")),
-    #   ),
-    #   column(
-    #     width = 9,
-    #     div(
-    #       id = "record_control",
-    #       actionButton(
-    #         ns("backward"),
-    #         label = "Previous Record"
-    #       ),
-    #       actionButton(
-    #         ns("forward"),
-    #         label = "Next Record"
-    #       )
-    #     )
-    #   )
-    # ),
-    fluidRow(
-      column(
-        width = 3,
-        p("Species ID")
-      ),
-      column(
-        width = 9,
-        selectInput(
-          ns("species"),
-          label = NULL,
-          choices = c("bear", "moose")
-        ),
-      )
-    ),
-    tags$details(
-      tags$summary("Modify Species ID List"),
-      div(
-        id = "list_species",
-        textInput(
-          ns("add_species_text"),
-          label = NULL
-        ),
-        div(
-          id = "list_button",
-          actionButton(
-            ns("add_species_bttn"),
-            label = "add species"
-          ),
-          actionButton(
-            ns("rem_species_bttn"),
-            label = "remove species"
-          )
-        )
-      )
-    ),
-    fluidRow(
-      div(
-        id = "species_distance",
-        column(
-          width = 3,
-          p("Distance (m)")
-        ),
-        column(
-          width = 9,
-          numericInput(
-            ns("distance"),
-            label = NULL,
-            value = 1,
-            min = 0,
-            max = 100,
-            step = 1
-          )
-        )
-      )  
-    ),
-    fluidRow(
-      column(
-        width = 3,
-        p("Notes")
-      ),
-      column(
-        width = 9,
-        textAreaInput(
-          ns("notes"),
-          label = NULL
-        )
-      )
-    ),
-    fluidRow(
-      column(
-        width = 3,
-        p("Observation Images")
-      ),
-      column(
-        width = 9,
-        pick_images_ui(ns("pick_images"))
-      )
-    ),
-    fluidRow(
-      br(),
-      div(
-        id = "record_buttons",
-        actionButton(
-          inputId = ns("add_record"),
-          label = "add record"
-        ),
-        actionButton(
-          inputId = ns("update_record"),
-          label = "update record"
-        ),
-        actionButton(
-          inputId = ns("remove_record"),
-          label = "delete record"
-        )
-     )
-    )
-  )
+  # div(
+  #   # fluidRow(
+  #   #   column(
+  #   #     width = 3,
+  #   #     textOutput(ns("species_record")),
+  #   #   ),
+  #   #   column(
+  #   #     width = 9,
+  #   #     div(
+  #   #       id = "record_control",
+  #   #       actionButton(
+  #   #         ns("backward"),
+  #   #         label = "Previous Record"
+  #   #       ),
+  #   #       actionButton(
+  #   #         ns("forward"),
+  #   #         label = "Next Record"
+  #   #       )
+  #   #     )
+  #   #   )
+  #   # ),
+  #   fluidRow(
+  #     column(
+  #       width = 3,
+  #       p("Species ID")
+  #     ),
+  #     column(
+  #       width = 9,
+  #       selectInput(
+  #         ns("species"),
+  #         label = NULL,
+  #         choices = c("bear", "moose")
+  #       ),
+  #     )
+  #   ),
+  #   tags$details(
+  #     tags$summary("Modify Species ID List"),
+  #     div(
+  #       id = "list_species",
+  #       textInput(
+  #         ns("add_species_text"),
+  #         label = NULL
+  #       ),
+  #       div(
+  #         id = "list_button",
+  #         actionButton(
+  #           ns("add_species_bttn"),
+  #           label = "add species"
+  #         ),
+  #         actionButton(
+  #           ns("rem_species_bttn"),
+  #           label = "remove species"
+  #         )
+  #       )
+  #     )
+  #   ),
+  #   fluidRow(
+  #     div(
+  #       id = "species_distance",
+  #       column(
+  #         width = 3,
+  #         p("Distance (m)")
+  #       ),
+  #       column(
+  #         width = 9,
+  #         numericInput(
+  #           ns("distance"),
+  #           label = NULL,
+  #           value = 1,
+  #           min = 0,
+  #           max = 100,
+  #           step = 1
+  #         )
+  #       )
+  #     )  
+  #   ),
+  #   fluidRow(
+  #     column(
+  #       width = 3,
+  #       p("Notes")
+  #     ),
+  #     column(
+  #       width = 9,
+  #       textAreaInput(
+  #         ns("notes"),
+  #         label = NULL
+  #       )
+  #     )
+  #   ),
+  #   fluidRow(
+  #     column(
+  #       width = 3,
+  #       p("Observation Images")
+  #     ),
+  #     column(
+  #       width = 9,
+  #       pick_images_ui(ns("pick_images"))
+  #     )
+  #   ),
+  #   fluidRow(
+  #     br(),
+  #     div(
+  #       id = "record_buttons",
+  #       actionButton(
+  #         inputId = ns("add_record"),
+  #         label = "add record"
+  #       ),
+  #       actionButton(
+  #         inputId = ns("update_record"),
+  #         label = "update record"
+  #       ),
+  #       actionButton(
+  #         inputId = ns("remove_record"),
+  #         label = "delete record"
+  #       )
+  #    )
+  #   )
+  # )
 }
 
 image_records_server <- function(id, rv) {
   moduleServer(id, function(input, output, session) {
-    
-    pick_images_server(
-      id = "pick_images",
-      rv = rv,
-      add = reactive({input$add_record})
-    ) -> images
-    
+
+    # pick_images_server(
+    #   id = "pick_images",
+    #   rv = rv,
+    #   add = reactive({input$add_record})
+    # ) -> images
 
     observe({
       updateSelectInput(
@@ -138,16 +137,16 @@ image_records_server <- function(id, rv) {
         choices = rv$names
       )
     })
-    
+
     ## rv$control_file  is reactive value
     ##
     ## tibble(image, date_time, event)
-    ##
+    ## 
     ## rv$annotations is a reactive value
     ##
     ## tibble(event = rv$event,
-    ##       event_begin = date_time[first] no? 
-    ##       event_end = date_time[last],   no? 
+    ##       event_begin = date_time[first] no?
+    ##       event_end = date_time[last],   no?
     ##       id = input$species,
     ##       images = list(images),
     ##       record = record number

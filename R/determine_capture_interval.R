@@ -3,12 +3,12 @@
 # output is a tibble with image, date_time (created), and event number
 # inputs are the directory of images and the length of time for the interval detection
 #
-determine_capture_intervals <- function(directory, interval = 15){
-  
-  
+determine_capture_intervals <- function(directory, interval = 15) {
+
+
   dir_ls(directory) %>%
     keep(str_detect(.,".JPG")) -> temp
-  
+
   if(length(temp>0)){
     print("processing file")
   temp %>%  
@@ -28,4 +28,3 @@ determine_capture_intervals <- function(directory, interval = 15){
     return(tbl)
   }
 }
-

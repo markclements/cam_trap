@@ -1,6 +1,5 @@
 shut_down_UI <- function(id) {
   ns <- NS(id)
-  
 }
 
 shut_down_server <- function(id, dir, rv, input) {
@@ -8,30 +7,27 @@ shut_down_server <- function(id, dir, rv, input) {
     
 
     onStop(function() {
-      cat("stopping")
-
-      isolate({
-        if(length(rv$annotations) > 0 | length(rv$contol_file) > 0){
+      
+      # isolate({
+      #   if(length(rv$annotations) > 0 | length(rv$contol_file) > 0){
+      #     saveRDS(
+      #       list(
+      #         annotations = tibble(rv$annotations),
+      #         control_file = tibble(rv$control_file),
+      #         inputs = reactiveValuesToList(input)
+      #       ),
+      #       file = here(glue("rv$dir}/data.RDS"))
+      #     )
+      #   })
+        isolate({
           saveRDS(
             list(
-              annotations = tibble(rv$annotations),
-              control_file = tibble(rv$control_file),
-              inputs = reactiveValuesToList(input)
+              dir = rv$dirs_list,
+              names = as.character(rv$names)
             ),
-            file = glue("{dir()}/data.RDS")
+            file = here("session.RDS")
           )
-        }
-        isolate({
-        saveRDS(
-          list(
-            dir = glue("{dir()}"),
-            names = as.character(rv$names)
-          ),
-          file = glue("session.RDS")
-        )
-        })    
-      })
+        })
     })
-    
   })
-}
+}  

@@ -1,5 +1,6 @@
 library(shiny)
-library(shinyjs)
+library(here)
+#library(shinyjs)
 library(tidyverse)
 library(lubridate)
 library(fs)
@@ -28,9 +29,10 @@ source("R/update_interval_module.R")
 source("R/pick_images_module.R")
 
 ui <- tagList(
-  tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
-  ),
+  includeCSS("www/style.css"),
+  # tags$head(
+  #   tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+  # ),
   navbarPage(
     fluid = TRUE,
     title = "CamTrapApp",
@@ -57,13 +59,13 @@ ui <- tagList(
       fluidRow(
         column(
           width = 8,
-          display_image_sequence_UI("img")
+          display_image_sequence_UI("img") ## image to annotate
         ),
         column(
           width = 4,
-          display_image_sequence_control_UI("img_seq"),
+          display_image_sequence_control_UI("img_seq"), ## scan through images
           hr(),
-          image_records_UI("image_records"),
+          # image_records_UI("image_records"), ## old ui 
           hr(),
           display_table_UI("table")
         )
@@ -77,28 +79,26 @@ ui <- tagList(
 )
  
 
-server <- function(input,output,session){
+server <- function(input, output, session) {
 
   rv <- reactiveValues(event = 1)
   ## rv$event = session events
-  ## rv$control_file 
-  ## rv$annotations 
-  ## rv$names  
+  ## rv$control_file
+  ## rv$annotations
+  ## rv$names
   ## rv$record record number
-
-
+  ## rv$dir = directory where images are found, selected at start-up.
 
   start_up_server(
     id = "start",
     rv = rv,
     input = input
-  ) -> dir
-
+  )
 
   display_image_sequence_server(
     id = "img",
     image = image,
-    dir = dir
+    rv = rv
   )
 
   display_image_sequence_control_server(
@@ -119,7 +119,7 @@ server <- function(input,output,session){
   )
 
   display_table_server(
-    id = "table", 
+    id = "table",
     rv = rv
   )
 
@@ -135,7 +135,7 @@ server <- function(input,output,session){
   capture_events <- reactive({
     req(rv$control_file)
     rv$control_file %>% pull(event) %>% unique() -> x
-    rv$event <- 1 ## for switching to a new image directory 
+    rv$event <- 1 ## for switching to a new image directory
     return(x)
   })
 
@@ -159,10 +159,5 @@ server <- function(input,output,session){
     if (is.null(rv$control_file)) return("No files")
     glue::glue("Capture sequence {rv$event} of {max(capture_events())}")
   })
-#
-#   
-# 
-      
 }
-
-shinyApp(ui,server)
+shiny::runApp(list(ui = ui, server = server))

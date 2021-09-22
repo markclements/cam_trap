@@ -1,56 +1,78 @@
 start_up_UI <- function(id) {
   ns <- NS(id)
   tagList(
-  verbatimTextOutput(ns("one")),
-  shinyDirButton(id = ns("upload_new"), 
-                 label = "use new directory", 
-                 title = "Upload")
+  selectInput(
+       inputId = ns("direc"),
+       label = "Directories List (sorted by most recent)",
+       choices = c(""),
+       width = "100%"
+    ),
+    actionButton(
+        inputId = ns("load_dir"),
+        label = "Directory from List"
+    ),
+    shinyDirButton(
+        id = ns("upload_new"),
+        label = "New Directory",
+        title = "New Directory"
+    ),
+    verbatimTextOutput(
+        outputId = ns("out")
+    )
   )
 }
 
 start_up_server <- function(id, rv, input) {
   moduleServer(id, function(input, output, session) {
+    ## session.RDS is a file that contains the path to the last used directory and the list of project species names 
+    ## it is saved on exit from the app: see shut_down_module.R
+    ## it is intended to make it easier to remember where I left off, but it is quite fragile in design. 
+    
     observe({
-      if(!file.exists("session.RDS")) {
-        print("not found")
-        output$one <- renderPrint({
-          print("No previous directory found")
-        })
-      } else {
-        session <- readRDS("session.RDS")
-        if (!is.null(session$names)) rv$names <- session$names
-        else rv$names <- character()
-        output$one <- renderPrint({
-          print(glue("The last directory used was {session$dir}"))
-        })
+      if (file.exists(here("session.RDS"))) {
+         rv$session_file <- readRDS("session.RDS")
+          isolate({
+           rv$dirs_list <- rv$session_file$dir
+          })
       }
     })
 
-    dir <- reactive({
-    volumes <- c(Home = fs::path_home(),
-                 "R Installation" = R.home(),
-                 getVolumes()())
-    shinyDirChoose(input = input,
-                   id = "upload_new",
-                   roots = volumes,
-                   session = session,
-                   restrictions = system.file(package = "base"))
-    new_dir <- parseDirPath(volumes, input$upload_new)
-  
-  
-  if(file.exists("session.RDS")){
-    old_dir <- readRDS("session.RDS")$dir
-    return(old_dir)
-  }
-  else return(new_dir)
-    
-    
+    observeEvent(input$upload_new, {
+        volumes <- c(Home = fs::path_home(),
+                    "R Installation" = R.home(),
+                    getVolumes()())
+
+        shinyDirChoose(
+            input = input,
+            id = "upload_new",
+            roots = volumes,
+            session = session,
+            restrictions = system.file(package = "base")
+            )
+
+        rv$dir <- parseDirPath(volumes, input$upload_new)
     })
-    
+
+    observeEvent(input$load_dir, {
+        rv$dir <- input$direc
+    })
+
     observe({
-      req(dir())
-      if (file.exists(str_c(dir(), "data.RDS", sep = "/"))) {
-        temp <- readRDS(str_c(dir(), "data.RDS", sep = "/"))
+       updated_list <- c(rv$dir, rv$dirs_list)
+       rv$dirs_list <- updated_list[!duplicated(updated_list)]
+       updateSelectInput(
+            inputId = "direc",
+            choices = rv$dirs_list
+        )
+    })
+
+    output$out <- renderPrint({
+        glue("{rv$dir}")
+    })
+    observe({
+      req(rv$dir)
+      if (file.exists(glue("{rv$dir}/data.RDS"))) {
+        temp <- readRDS(glue("{rv$dir}/data.RDS"))
       
         if (!is.null(temp$df)) {
           rv$annotations <- tibble()
@@ -59,7 +81,7 @@ start_up_server <- function(id, rv, input) {
         }
     
         if (is.null(temp$control_file)) {
-          rv$control_file <- determine_capture_intervals(dir(), 15)
+          rv$control_file <- determine_capture_intervals(rv$dir, 15)
         } else {
           rv$control_file <- temp$control_file
         }
@@ -67,12 +89,9 @@ start_up_server <- function(id, rv, input) {
         rv$temp <- character() ## for downstream stuff?
         rv$annotations <- tibble()
         #rv$names <- character()
-        rv$control_file <- determine_capture_intervals(dir(), 15)
+        rv$control_file <- determine_capture_intervals(rv$dir, 15)
       }
       # addResourcePath("temp",dir())
     })
-    
-    return(reactive({dir()}))
-
-  })
+   })
 }
