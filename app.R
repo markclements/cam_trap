@@ -9,6 +9,7 @@ library(shinyFiles)
 library(reactable)
 library(glue)
 library(shinyWidgets)
+library(excelR)
 #library(taxize)
 #library(wikitaxa)
 
@@ -77,57 +78,57 @@ ui <- tagList(
  
 
 server <- function(input,output,session){
-  
-  
+
   rv <- reactiveValues(event = 1)
   ## rv$event = session events
   ## rv$control_file 
   ## rv$annotations 
   ## rv$names  
   ## rv$record record number
-  
 
-  
+
+
   start_up_server(
     id = "start",
     rv = rv,
     input = input
   ) -> dir
-  
+
+
   display_image_sequence_server(
     id = "img",
     image = image,
     dir = dir
   )
-  
+
   display_image_sequence_control_server(
     id = "img_seq",
     rv = rv
   ) -> image
-  
+
   image_records_server(
     id = "image_records",
     rv = rv
   )
-  
+
   shut_down_server(
     id = "shut_down",
     rv = rv,
     dir = dir,
     input = input
   )
-  
+
   display_table_server(
     id = "table", 
     rv = rv
   )
-  
+
   update_interval_server(
     id = "update",
     rv = rv
   )
-  
-  
+
+
   #
   # Move this into a module = capture event navigation UI and server
   #
@@ -137,16 +138,15 @@ server <- function(input,output,session){
     rv$event <- 1 ## for switching to a new image directory 
     return(x)
   })
-  
+
   observeEvent(input$forward,{
     req(rv$event)
     if(rv$event >=1 & rv$event < max(capture_events())){
       rv$event <- rv$event + 1
       rv$record <- NULL
-    } 
-    
+    }
   })
-  
+
   observeEvent(input$backward,{
     req(rv$event)
     if(rv$event > 1 & rv$event <=  max(capture_events())) {
@@ -162,13 +162,7 @@ server <- function(input,output,session){
 #
 #   
 # 
-
-  
-  
       
 }
 
 shinyApp(ui,server)
-
-
-

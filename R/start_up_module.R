@@ -5,13 +5,11 @@ start_up_UI <- function(id) {
   shinyDirButton(id = ns("upload_new"), 
                  label = "use new directory", 
                  title = "Upload")
-)
+  )
 }
 
 start_up_server <- function(id, rv, input) {
   moduleServer(id, function(input, output, session) {
-    
-
     observe({
       if(!file.exists("session.RDS")) {
         print("not found")
@@ -27,23 +25,25 @@ start_up_server <- function(id, rv, input) {
         })
       }
     })
-    
+
     dir <- reactive({
-       
-      
-    volumes <- c(Home = fs::path_home(), 
-                 "R Installation" = R.home(), 
+    volumes <- c(Home = fs::path_home(),
+                 "R Installation" = R.home(),
                  getVolumes()())
     shinyDirChoose(input = input,
-                   id = "upload_new", 
-                   roots = volumes, 
-                   session = session, 
+                   id = "upload_new",
+                   roots = volumes,
+                   session = session,
                    restrictions = system.file(package = "base"))
-    new_dir <- parseDirPath(volumes,input$upload_new)
-
+    new_dir <- parseDirPath(volumes, input$upload_new)
+  
+  
+  if(file.exists("session.RDS")){
     old_dir <- readRDS("session.RDS")$dir
-    if(length(new_dir) > 0) return(new_dir)
-    else return(old_dir) 
+    return(old_dir)
+  }
+  else return(new_dir)
+    
     
     })
     

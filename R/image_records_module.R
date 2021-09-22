@@ -140,9 +140,11 @@ image_records_server <- function(id, rv) {
     })
     
     ## rv$control_file  is reactive value
+    ##
     ## tibble(image, date_time, event)
     ##
     ## rv$annotations is a reactive value
+    ##
     ## tibble(event = rv$event,
     ##       event_begin = date_time[first] no? 
     ##       event_end = date_time[last],   no? 
