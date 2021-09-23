@@ -5,106 +5,74 @@ install.packages("excelR")
 
 
 
-ui <- fluidPage(
-
-excelOutput("table")
-
-)
-
-server <- function(input, output, session) {
-
-    rv <- reactiveValues()
-
-    observe({
-   
-    rv$table_data <- tibble(
-            species = rep(c("dog","cat"), 10),
-            distance = 1:20, 
-            notes = c("some notes brah")
-            )
-    })
-        output$table <- renderExcel({
-        
-            isolate({excelTable(rv$table_data, autoFill = TRUE)})
-        
-        })
-
-        observeEvent(input$table,{
-            rv$table_data <- excel_to_R(input$table)
-                
-                print(rv$table_data)
-        })
-
-}
-shiny::runApp(list(ui = ui, server = server))
 
 ui <- fluidPage(
-    selectInput(
-       inputId = "direc",
-       label = "Directories List (sorted by most recent)",
-       choices = c(""),
-       width = "100%"
+  titlePanel("Magick Shiny Demo"),
+
+  sidebarLayout(
+
+    sidebarPanel(
+
+      fileInput("upload", "Upload new image", accept = c('image/png', 'image/jpeg')),
+      textInput("size", "Size", value = "500x500"),
+      sliderInput("rotation", "Rotation", 0, 360, 0),
+      sliderInput("blur", "Blur", 0, 20, 0),
+      sliderInput("implode", "Implode", -1, 1, 0, step = 0.01),
+
+      checkboxGroupInput("effects", "Effects",
+                         choices = list("negate", "charcoal", "edge", "flip", "flop"))
     ),
-    actionButton(
-        inputId = "load_dir",
-        label = "Directory from List"
-    ),
-    shinyDirButton(
-        id = "upload_new",
-        label = "New Directory",
-        title = "New Directory"
-    ),
-    verbatimTextOutput(
-        outputId = "out"
+    mainPanel(
+      imageOutput("img")
     )
+  )
+  
 )
+
 server <- function(input, output, session) {
 
-    rv <- reactiveValues()
+  library(magick)
 
-    
+  # Start with placeholder img
+  image <- image_read("https://images-na.ssl-images-amazon.com/images/I/81fXghaAb3L.jpg")
+  observeEvent(input$upload, {
+    if (length(input$upload$datapath))
+      image <<- image_read(input$upload$datapath)
+    info <- image_info(image)
+    updateCheckboxGroupInput(session, "effects", selected = "")
+    updateTextInput(session, "size", value = paste(info$width, info$height, sep = "x"))
+  })
 
-   observeEvent(input$upload_new, {
-        volumes <- c(Home = fs::path_home(),
-                    "R Installation" = R.home(),
-                    getVolumes()())
+  # A plot of fixed size
+  output$img <- renderImage({
 
-        shinyDirChoose(
-            input = input,
-            id = "upload_new",
-            roots = volumes,
-            session = session,
-            restrictions = system.file(package = "base")
-            )
+    # Boolean operators
+    if("negate" %in% input$effects)
+      image <- image_negate(image)
 
-        rv$dir <- parseDirPath(volumes, input$upload_new)
-    })
+    if("charcoal" %in% input$effects)
+      image <- image_charcoal(image)
 
-    observeEvent(input$load_dir, {
-        rv$dir <- input$direc
-    })
+    if("edge" %in% input$effects)
+      image <- image_edge(image)
 
-    output$out <- renderPrint({
-        glue("{rv$dir}")
-    })
-    onStop(function() {
-      #cat("stopping")
-        isolate({
-          saveRDS(
-            list(
-              dir = c(rv$dir, rv$session_file$dir),
-              names = as.character(rv$names)
-            ),
-            file = here("session.RDS")
-          )
-        })
-      })
+    if("flip" %in% input$effects)
+      image <- image_flip(image)
 
+    if("flop" %in% input$effects)
+      image <- image_flop(image)
+
+    # Numeric operators
+    tmpfile <- image %>%
+      image_rotate(input$rotation) %>%
+      image_implode(input$implode) %>%
+      image_blur(input$blur, input$blur) %>%
+      image_resize(input$size) %>%
+      image_write(tempfile(fileext='jpg'), format = 'jpg')
+
+    # Return a list
+    list(src = tmpfile, contentType = "image/jpeg")
+  })
 }
-shiny::runApp(list(ui = ui, server = server))
 
-
-
-dirs <- c("one", "one", "two", "three", "four", "one")
-
-dirs[!duplicated(dirs)]
+shinyApp(ui, server)
