@@ -64,7 +64,7 @@ ui <- tagList(
         column(
           width = 4,
           display_image_sequence_control_UI("img_seq"), ## scan through images
-          hr(),
+          # hr(),
           # image_records_UI("image_records"), ## old ui 
           hr(),
           display_table_UI("table")
@@ -83,9 +83,9 @@ server <- function(input, output, session) {
 
   rv <- reactiveValues(event = 1)
   ## rv$event = session events
-  ## rv$control_file
-  ## rv$annotations
-  ## rv$names
+  ## rv$control_file 
+  ## rv$annotations = list of dataframes (length = # images) 
+  ## rv$names species names
   ## rv$record record number
   ## rv$dir = directory where images are found, selected at start-up.
 
@@ -106,10 +106,10 @@ server <- function(input, output, session) {
     rv = rv
   ) -> image
 
-  image_records_server(
-    id = "image_records",
-    rv = rv
-  )
+  # image_records_server(
+  #   id = "image_records",
+  #   rv = rv
+  # )
 
   shut_down_server(
     id = "shut_down",
@@ -120,7 +120,8 @@ server <- function(input, output, session) {
 
   display_table_server(
     id = "table",
-    rv = rv
+    rv = rv,
+    image = image
   )
 
   update_interval_server(

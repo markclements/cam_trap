@@ -87,9 +87,13 @@ start_up_server <- function(id, rv, input) {
         }
       } else {
         rv$temp <- character() ## for downstream stuff?
-        rv$annotations <- tibble()
         #rv$names <- character()
         rv$control_file <- determine_capture_intervals(rv$dir, 15)
+        if (!is.null(rv$control_file)) {
+          rv$control_file %>%
+          pull(image) -> imgs
+          rv$annotations <- imap(setNames(imgs,imgs), ~tibble(species = as.character(NA), distance = as.numeric(NA), notes = as.character(NA)))
+        }
       }
       # addResourcePath("temp",dir())
     })

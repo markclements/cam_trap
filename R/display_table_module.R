@@ -1,25 +1,35 @@
 display_table_UI <- function(id) {
   ns <- NS(id)
   #reactableOutput(ns("table"))
-  excelOutput(ns("table"))
+   rHandsontableOutput(ns("table"))
 }
 
-display_table_server <- function(id, rv) {
+display_table_server <- function(id, rv, image) {
   moduleServer(id, function(input, output, session) {
 
-    output$table <- renderExcel({
+
+    observeEvent(input$table, {
+      rv$annotations[[image()]] <- hot_to_r(input$table)
+    })
+
+    table <- reactive({
+      table <- rv$annotations[[image()]]
+      return(table)
+    })
+
+    output$table <- renderRHandsontable({
     #output$table <- renderReactable({
-      if (is.null(rv$annotations)) return()
+      if (is.null(table())) return()
 
       else {
+        rhandsontable(table(), stretch = "all")
 
-        rv$annotations %>% 
-          filter(event == rv$event) %>%
-          select(id, distance, images, notes) %>%
-          mutate(images = map_int(images, ~length(.))) %>%
-          ungroup() -> table
+        # rv$annotations %>% 
+        #   filter(event == rv$event) %>%
+        #   select(id, distance, images, notes) %>%
+        #   mutate(images = map_int(images, ~length(.))) %>%
+        #   ungroup() -> table
 
-  print(table)
       # reactable(table,
       #           resizable = TRUE, 
       #           showPageSizeOptions = TRUE,
@@ -28,7 +38,7 @@ display_table_server <- function(id, rv) {
       #           striped = TRUE, 
       #           highlight = TRUE,
       #           bordered = TRUE)
-      excelTable(data = table, fill = TRUE)
+      
       }
       })
     # observe({
